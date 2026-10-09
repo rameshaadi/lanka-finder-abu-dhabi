@@ -44,6 +44,10 @@
     .closed { color: #b13c32; }
     .tag { display: inline-block; background: #e7f2e9; padding: 5px 9px; border-radius: 20px; font-size: 12px; }
     .tag.draft { background: #fdeccc; color: #7a4b00; }
+    .cardhead { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; }
+    .cardhead h3 { margin: 0; }
+    button.heart { background: transparent; color: #b13c32; font-size: 26px; line-height: 1; padding: 0 2px; border: 0; }
+    button.small { padding: 7px 12px; font-size: 14px; }
     .panel { margin-top: 24px; }
     .panel label { display: block; font-size: 14px; margin-bottom: 12px; }
     .panel label input, .panel label textarea { margin-top: 5px; }
@@ -78,6 +82,7 @@
       <input id="search" type="search" placeholder="Search restaurant or area..." aria-label="Search restaurants">
       <button id="nearby" class="secondary" type="button">Find nearest</button>
       <button id="openOnly" class="secondary" type="button">Open now</button>
+      <button id="savedOnly" class="secondary" type="button">♡ Saved</button>
     </div>
 
     <div id="map" aria-label="Map of Sri Lankan restaurants"></div>
@@ -176,6 +181,35 @@
     let onlyOpen = false;
     let isAdmin = false;
     let loadRequest = 0;
+    let onlySaved = false;
+
+    // Favorites are stored in this browser only (no login needed)
+    let favorites = new Set();
+    try {
+      favorites = new Set(JSON.parse(localStorage.getItem("lanka_favorites") || "[]"));
+    } catch { favorites = new Set(); }
+
+    function saveFavorites() {
+      try { localStorage.setItem("lanka_favorites", JSON.stringify([...favorites])); } catch {}
+    }
+
+    function toggleFavorite(id) {
+      favorites.has(id) ? favorites.delete(id) : favorites.add(id);
+      saveFavorites();
+      draw();
+    }
+
+    async function shareRestaurant(r) {
+      const link = location.origin + location.pathname;
+      const text = r.name + "\n" + r.address + "\nDirections: " + directions(r) +
+        "\nFound on Lanka Finder: " + link;
+      if (navigator.share) {
+        try { await navigator.share({ title: r.name, text }); return; } catch (e) {
+          if (e && e.name === "AbortError") return;
+        }
+      }
+      window.open("https://wa.me/?text=" + encodeURIComponent(text), "_blank", "noopener");
+    }
 
     const map = L.map("map").setView([24.4539, 54.3773], 11);
 
@@ -272,7 +306,9 @@
 
       let shown = restaurants.filter(r => {
         const matches = (r.name + " " + r.address).toLowerCase().includes(query);
-        return matches && (!onlyOpen || currentStatus(r.opening_hours) === "Open now");
+        return matches &&
+          (!onlyOpen || currentStatus(r.opening_hours) === "Open now") &&
+          (!onlySaved || favorites.has(r.id));
       });
 
       if (userPosition) {
@@ -288,7 +324,9 @@
 
       $("message").textContent = shown.length
         ? shown.length + " restaurant" + (shown.length === 1 ? "" : "s") + " found"
-        : "No restaurants to display yet. Please check back soon.";
+        : onlySaved
+          ? "No saved restaurants yet. Tap the ♡ on a card to save it."
+          : "No restaurants to display yet. Please check back soon.";
 
       shown.forEach(r => {
         const status = currentStatus(r.opening_hours);
@@ -301,7 +339,11 @@
         card.className = "card";
 
         card.innerHTML = `
-          <h3>${escapeHTML(r.name)}</h3>
+          <div class="cardhead">
+            <h3>${escapeHTML(r.name)}</h3>
+            <button type="button" class="heart" aria-pressed="${favorites.has(r.id)}"
+              aria-label="${favorites.has(r.id) ? "Remove from saved" : "Save restaurant"}">${favorites.has(r.id) ? "♥" : "♡"}</button>
+          </div>
           ${r.is_published || !adminMode() ? "" : '<p><span class="tag draft">Draft · hidden from public</span></p>'}
           <p class="muted">${escapeHTML(r.address)}</p>
           <p class="${status === "Open now" ? "status" : status === "Closed now" ? "status closed" : "muted"}">
@@ -321,11 +363,17 @@
             <summary>Opening hours</summary>
             <p class="muted">${escapeHTML(hoursSummary(r.opening_hours))}</p>
           </details>
+          <div class="actions">
+            <button type="button" class="share-button secondary small">Share</button>
+          </div>
           ${adminMode() ? `<div class="actions">
             <button type="button" class="edit-button">Edit</button>
             <button type="button" class="delete-button secondary">Delete</button>
           </div>` : ""}
         `;
+
+        card.querySelector(".heart").addEventListener("click", () => toggleFavorite(r.id));
+        card.querySelector(".share-button").addEventListener("click", () => shareRestaurant(r));
 
         if (adminMode()) {
           card.querySelector(".edit-button").addEventListener("click", () => editRestaurant(r));
@@ -431,6 +479,12 @@
     $("openOnly").addEventListener("click", () => {
       onlyOpen = !onlyOpen;
       $("openOnly").textContent = onlyOpen ? "Show all" : "Open now";
+      draw();
+    });
+
+    $("savedOnly").addEventListener("click", () => {
+      onlySaved = !onlySaved;
+      $("savedOnly").textContent = onlySaved ? "Show all" : "♡ Saved";
       draw();
     });
 
