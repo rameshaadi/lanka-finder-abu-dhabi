@@ -247,17 +247,20 @@
       return entries.length ? entries.join(" · ") : "Opening hours not provided.";
     }
 
+    // Edit/Delete tools appear only for a signed-in admin on the #admin link
+    function adminMode() {
+      return isAdmin && location.hash === "#admin";
+    }
+
     function updateAdminVisibility() {
       $("loginArea").classList.toggle("hidden", isAdmin);
       $("adminArea").classList.toggle("hidden", !isAdmin);
-      document.querySelectorAll(".admin-edit").forEach(el => {
-        el.classList.toggle("hidden", !isAdmin);
-      });
     }
 
     // Admin panel only appears when the link ends with #admin
     function showAdminIfRequested() {
       $("adminPanel").classList.toggle("hidden", location.hash !== "#admin");
+      draw();
     }
 
     function draw() {
@@ -299,7 +302,7 @@
 
         card.innerHTML = `
           <h3>${escapeHTML(r.name)}</h3>
-          ${r.is_published ? "" : '<p><span class="tag draft">Draft · hidden from public</span></p>'}
+          ${r.is_published || !adminMode() ? "" : '<p><span class="tag draft">Draft · hidden from public</span></p>'}
           <p class="muted">${escapeHTML(r.address)}</p>
           <p class="${status === "Open now" ? "status" : status === "Closed now" ? "status closed" : "muted"}">
             ${escapeHTML(status)}
@@ -318,14 +321,16 @@
             <summary>Opening hours</summary>
             <p class="muted">${escapeHTML(hoursSummary(r.opening_hours))}</p>
           </details>
-          <div class="actions admin-edit ${isAdmin ? "" : "hidden"}">
+          ${adminMode() ? `<div class="actions">
             <button type="button" class="edit-button">Edit</button>
             <button type="button" class="delete-button secondary">Delete</button>
-          </div>
+          </div>` : ""}
         `;
 
-        card.querySelector(".edit-button").addEventListener("click", () => editRestaurant(r));
-        card.querySelector(".delete-button").addEventListener("click", () => deleteRestaurant(r));
+        if (adminMode()) {
+          card.querySelector(".edit-button").addEventListener("click", () => editRestaurant(r));
+          card.querySelector(".delete-button").addEventListener("click", () => deleteRestaurant(r));
+        }
         $("list").append(card);
       });
 
