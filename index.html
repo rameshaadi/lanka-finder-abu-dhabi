@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,10 +7,7 @@
   <meta name="description" content="Find Sri Lankan restaurants in Abu Dhabi, UAE.">
   <title>Lanka Finder | Sri Lankan Restaurants in Abu Dhabi</title>
 
-  <link
-    rel="stylesheet"
-    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
-  >
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
 
   <style>
     :root {
@@ -20,126 +16,42 @@
       background: #f5f8f5;
       font-synthesis: none;
     }
-
     * { box-sizing: border-box; }
-
     body { margin: 0; }
-
-    header {
-      background: #123c32;
-      color: #fff;
-      padding: 28px 18px;
-    }
-
-    .container {
-      width: min(1100px, calc(100% - 32px));
-      margin: auto;
-    }
-
+    header { background: #123c32; color: #fff; padding: 28px 18px; }
+    .container { width: min(1100px, calc(100% - 32px)); margin: auto; }
     h1 { margin: 0 0 8px; font-size: 30px; }
     h2 { margin-top: 0; }
     h3 { margin: 0 0 8px; }
     p { line-height: 1.5; }
-
     main { padding-top: 22px; padding-bottom: 40px; }
-
     input, textarea, button {
-      font: inherit;
-      padding: 11px 12px;
-      border-radius: 8px;
-      border: 1px solid #ccd8d0;
+      font: inherit; padding: 11px 12px; border-radius: 8px; border: 1px solid #ccd8d0;
     }
-
-    input, textarea {
-      width: 100%;
-      background: #fff;
-      color: #19352b;
-    }
-
-    button {
-      background: #176749;
-      color: #fff;
-      border: 0;
-      cursor: pointer;
-      font-weight: 600;
-    }
-
+    input, textarea { width: 100%; background: #fff; color: #19352b; }
+    button { background: #176749; color: #fff; border: 0; cursor: pointer; font-weight: 600; }
     button:hover { opacity: .9; }
-
-    button.secondary {
-      background: #e5eee8;
-      color: #19352b;
-    }
-
-    .toolbar, .actions {
-      display: flex;
-      gap: 9px;
-      flex-wrap: wrap;
-      margin: 13px 0;
-    }
-
+    button.secondary { background: #e5eee8; color: #19352b; }
+    .toolbar, .actions { display: flex; gap: 9px; flex-wrap: wrap; margin: 13px 0; }
     .toolbar input { flex: 1; min-width: 180px; }
-
-    #map {
-      height: 340px;
-      width: 100%;
-      border-radius: 14px;
-      margin: 18px 0;
-      background: #e5eee8;
-      z-index: 1;
-    }
-
-    #list {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(245px, 1fr));
-      gap: 15px;
-    }
-
-    .card, .panel {
-      background: #fff;
-      border: 1px solid #e0e8e2;
-      border-radius: 14px;
-      padding: 18px;
-      overflow-wrap: anywhere;
-    }
-
+    #map { height: 340px; width: 100%; border-radius: 14px; margin: 18px 0; background: #e5eee8; z-index: 1; }
+    #list { display: grid; grid-template-columns: repeat(auto-fit, minmax(245px, 1fr)); gap: 15px; }
+    .card, .panel { background: #fff; border: 1px solid #e0e8e2; border-radius: 14px; padding: 18px; overflow-wrap: anywhere; }
     .card { min-width: 0; }
     .card p { margin: 9px 0; }
-
     .muted { color: #65776c; font-size: 14px; }
     .status { font-weight: 700; color: #187345; }
     .closed { color: #b13c32; }
-
-    .tag {
-      display: inline-block;
-      background: #e7f2e9;
-      padding: 5px 9px;
-      border-radius: 20px;
-      font-size: 12px;
-    }
-
+    .tag { display: inline-block; background: #e7f2e9; padding: 5px 9px; border-radius: 20px; font-size: 12px; }
+    .tag.draft { background: #fdeccc; color: #7a4b00; }
     .panel { margin-top: 24px; }
     .panel label { display: block; font-size: 14px; margin-bottom: 12px; }
     .panel label input, .panel label textarea { margin-top: 5px; }
-
-    .formgrid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
+    .formgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
     .full { grid-column: 1 / -1; }
     .hidden { display: none !important; }
-
     a { color: #176749; font-weight: 600; }
-
-    footer {
-      text-align: center;
-      color: #65776c;
-      padding: 22px 16px;
-      font-size: 13px;
-    }
-
+    footer { text-align: center; color: #65776c; padding: 22px 16px; font-size: 13px; }
     @media (max-width: 540px) {
       h1 { font-size: 26px; }
       .formgrid { grid-template-columns: 1fr; }
@@ -163,12 +75,7 @@
     <p>Explore restaurant locations, contact details and opening hours around Abu Dhabi.</p>
 
     <div class="toolbar">
-      <input
-        id="search"
-        type="search"
-        placeholder="Search restaurant or area..."
-        aria-label="Search restaurants"
-      >
+      <input id="search" type="search" placeholder="Search restaurant or area..." aria-label="Search restaurants">
       <button id="nearby" class="secondary" type="button">Find nearest</button>
       <button id="openOnly" class="secondary" type="button">Open now</button>
     </div>
@@ -178,21 +85,18 @@
     <p id="message" class="muted" role="status">Loading restaurants...</p>
     <div id="list"></div>
 
-    <section class="panel">
+    <!-- Hidden unless the link ends with #admin -->
+    <section class="panel hidden" id="adminPanel">
       <h2>Admin dashboard</h2>
       <p class="muted">Sign in with an approved administrator account to manage restaurant listings.</p>
 
       <div id="loginArea">
-        <label>
-          Email
+        <label>Email
           <input id="email" type="email" autocomplete="username" required>
         </label>
-
-        <label>
-          Password
+        <label>Password
           <input id="password" type="password" autocomplete="current-password" required>
         </label>
-
         <div class="actions">
           <button id="login" type="button">Log in</button>
         </div>
@@ -200,7 +104,6 @@
 
       <div id="adminArea" class="hidden">
         <p id="adminStatus" class="status">Administrator signed in.</p>
-
         <div class="actions">
           <button id="newRestaurant" type="button">+ Add restaurant</button>
           <button id="logout" class="secondary" type="button">Log out</button>
@@ -211,50 +114,33 @@
           <input id="rid" type="hidden">
 
           <div class="formgrid">
-            <label>
-              Restaurant name *
+            <label>Restaurant name *
               <input id="name" maxlength="150" required>
             </label>
-
-            <label>
-              Contact number
+            <label>Contact number
               <input id="phone" type="tel" maxlength="40">
             </label>
-
-            <label class="full">
-              Full address *
+            <label class="full">Full address *
               <input id="address" maxlength="300" required>
             </label>
-
-            <label>
-              Latitude *
+            <label>Latitude *
               <input id="lat" type="number" step="any" min="-90" max="90" required>
             </label>
-
-            <label>
-              Longitude *
+            <label>Longitude *
               <input id="lng" type="number" step="any" min="-180" max="180" required>
             </label>
-
-            <label class="full">
-              Opening hours (JSON)
+            <label class="full">Opening hours (JSON)
               <textarea id="hours" rows="6" required></textarea>
             </label>
-
             <p class="muted full">
               Use 24-hour time. Day keys: mon, tue, wed, thu, fri, sat, sun.
-              Example:
-              <code>{"mon":{"open":"09:00","close":"22:00"}}</code>
+              Example: <code>{"mon":{"open":"09:00","close":"22:00"}}</code>
             </p>
-
             <label>
-              <input id="verified" type="checkbox" style="width:auto">
-              Location verified
+              <input id="verified" type="checkbox" style="width:auto"> Location verified
             </label>
-
             <label>
-              <input id="published" type="checkbox" style="width:auto">
-              Publish restaurant
+              <input id="published" type="checkbox" style="width:auto"> Publish restaurant (visible to public)
             </label>
           </div>
 
@@ -269,28 +155,19 @@
     </section>
   </main>
 
-  <footer>
-    Lanka Finder · Abu Dhabi, UAE · Confirm restaurant hours before visiting.
-  </footer>
+  <footer>Lanka Finder · Abu Dhabi, UAE · Confirm restaurant hours before visiting.</footer>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 
   <script>
-    // Your Supabase project configuration
-    const SUPABASE_URL =
-      "https://irhcauatgiysfqzbtzvp.supabase.co";
+    // Your Supabase project configuration (unchanged)
+    const SUPABASE_URL = "https://irhcauatgiysfqzbtzvp.supabase.co";
+    const SUPABASE_KEY = "sb_publishable_qLyjjMqJfhJTB7FOFXG1Nw_FFXL-XnV";
 
-    const SUPABASE_KEY =
-      "sb_publishable_qLyjjMqJfhJTB7FOFXG1Nw_FFXL-XnV";
-
-    const db = window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_KEY
-    );
+    const db = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     const $ = id => document.getElementById(id);
-
     const days = ["sun", "mon", "tue", "wed", "thu", "fri", "sat"];
 
     let restaurants = [];
@@ -309,104 +186,52 @@
 
     function escapeHTML(value) {
       return String(value ?? "").replace(/[&<>"']/g, ch => ({
-        "&": "&amp;",
-        "<": "&lt;",
-        ">": "&gt;",
-        '"': "&quot;",
-        "'": "&#39;"
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
       })[ch]);
     }
 
-    function abuDhabiTime() {
-      const parts = new Intl.DateTimeFormat("en-GB", {
-        timeZone: "Asia/Dubai",
-        weekday: "short",
-        hour: "2-digit",
-        minute: "2-digit",
-        hourCycle: "h23"
-      }).formatToParts(new Date());
+    function currentStatus(hours) {
+      try {
+        const parts = new Intl.DateTimeFormat("en-GB", {
+          timeZone: "Asia/Dubai", weekday: "short",
+          hour: "2-digit", minute: "2-digit", hourCycle: "h23"
+        }).formatToParts(new Date());
 
-      const get = type => parts.find(p => p.type === type)?.value;
+        const get = type => parts.find(p => p.type === type)?.value;
+        const day = get("weekday").toLowerCase().slice(0, 3);
+        const time = Number(get("hour")) * 60 + Number(get("minute"));
+        const today = hours?.[day];
 
-      return {
-        day: get("weekday").toLowerCase().slice(0, 3),
-        minute: Number(get("hour")) * 60 + Number(get("minute"))
-      };
-    }
+        if (!today || !today.open || !today.close) return "Hours unavailable";
 
-    function parseTime(value) {
-      if (typeof value !== "string" || !/^\d{2}:\d{2}$/.test(value)) {
-        return NaN;
+        const parse = value => {
+          if (!/^\d{2}:\d{2}$/.test(value)) return NaN;
+          const [h, m] = value.split(":").map(Number);
+          return h <= 23 && m <= 59 ? h * 60 + m : NaN;
+        };
+
+        const start = parse(today.open);
+        const end = parse(today.close);
+        if (!Number.isFinite(start) || !Number.isFinite(end)) return "Hours unavailable";
+
+        const open = start < end
+          ? time >= start && time < end
+          : start > end ? time >= start || time < end : false;
+
+        return open ? "Open now" : "Closed now";
+      } catch {
+        return "Hours unavailable";
       }
-
-      const [h, m] = value.split(":").map(Number);
-
-      if (h > 23 || m > 59) return NaN;
-
-      return h * 60 + m;
     }
 
-    
-function currentStatus(hours) {
-  try {
-    const parts = new Intl.DateTimeFormat("en-GB", {
-      timeZone: "Asia/Dubai",
-      weekday: "short",
-      hour: "2-digit",
-      minute: "2-digit",
-      hourCycle: "h23"
-    }).formatToParts(new Date());
-
-    const get = type => parts.find(p => p.type === type)?.value;
-    const day = get("weekday").toLowerCase().slice(0, 3);
-    const time = Number(get("hour")) * 60 + Number(get("minute"));
-    const today = hours?.[day];
-
-    if (!today || !today.open || !today.close)
-      return "Hours unavailable";
-
-    const parse = value => {
-      if (!/^\d{2}:\d{2}$/.test(value)) return NaN;
-      const [h, m] = value.split(":").map(Number);
-      return h <= 23 && m <= 59 ? h * 60 + m : NaN;
-    };
-
-    const start = parse(today.open);
-    const end = parse(today.close);
-
-    if (!Number.isFinite(start) || !Number.isFinite(end))
-      return "Hours unavailable";
-
-    const open = start < end
-      ? time >= start && time < end
-      : start > end
-        ? time >= start || time < end
-        : false;
-
-    return open ? "Open now" : "Closed now";
-  } catch {
-    return "Hours unavailable";
-  }
-}
     function distance(lat, lng) {
-      if (!userPosition) return "Enable location to see distance";
-
-      const radians = x => x * Math.PI / 180;
-
-      const dLat = radians(lat - userPosition.lat);
-      const dLng = radians(lng - userPosition.lng);
-
-      const a =
-        Math.sin(dLat / 2) ** 2 +
-        Math.cos(radians(userPosition.lat)) *
-        Math.cos(radians(lat)) *
-        Math.sin(dLng / 2) ** 2;
-
-      const km = 6371 * 2 * Math.atan2(
-        Math.sqrt(a),
-        Math.sqrt(1 - a)
-      );
-
+      if (!userPosition) return "Tap “Find nearest” to see distance";
+      const rad = x => x * Math.PI / 180;
+      const dLat = rad(lat - userPosition.lat);
+      const dLng = rad(lng - userPosition.lng);
+      const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(rad(userPosition.lat)) * Math.cos(rad(lat)) * Math.sin(dLng / 2) ** 2;
+      const km = 6371 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
       return km.toFixed(1) + " km away";
     }
 
@@ -416,64 +241,57 @@ function currentStatus(hours) {
     }
 
     function hoursSummary(hours) {
-      if (!hours || typeof hours !== "object") {
-        return "Opening hours not provided.";
-      }
-
-      const entries = days
-        .filter(day => hours[day])
-        .map(day => {
-          const h = hours[day];
-          return day.toUpperCase() + ": " +
-            (h.open || "?") + "–" + (h.close || "?");
-        });
-
-      return entries.length
-        ? entries.join(" · ")
-        : "Opening hours not provided.";
+      if (!hours || typeof hours !== "object") return "Opening hours not provided.";
+      const entries = days.filter(d => hours[d]).map(d =>
+        d.toUpperCase() + ": " + (hours[d].open || "?") + "–" + (hours[d].close || "?"));
+      return entries.length ? entries.join(" · ") : "Opening hours not provided.";
     }
 
     function updateAdminVisibility() {
       $("loginArea").classList.toggle("hidden", isAdmin);
       $("adminArea").classList.toggle("hidden", !isAdmin);
-
       document.querySelectorAll(".admin-edit").forEach(el => {
         el.classList.toggle("hidden", !isAdmin);
       });
     }
 
+    // Admin panel only appears when the link ends with #admin
+    function showAdminIfRequested() {
+      $("adminPanel").classList.toggle("hidden", location.hash !== "#admin");
+    }
+
     function draw() {
       $("list").replaceChildren();
-
-      markers.forEach(marker => map.removeLayer(marker));
+      markers.forEach(m => map.removeLayer(m));
       markers = [];
 
       const query = $("search").value.trim().toLowerCase();
 
-      const shown = restaurants.filter(r => {
-        const matches = (r.name + " " + r.address)
-          .toLowerCase()
-          .includes(query);
-
-        return matches &&
-          (!onlyOpen || currentStatus(r.opening_hours) === "Open now");
+      let shown = restaurants.filter(r => {
+        const matches = (r.name + " " + r.address).toLowerCase().includes(query);
+        return matches && (!onlyOpen || currentStatus(r.opening_hours) === "Open now");
       });
 
+      if (userPosition) {
+        const d = r => {
+          const rad = x => x * Math.PI / 180;
+          const dLat = rad(r.latitude - userPosition.lat);
+          const dLng = rad(r.longitude - userPosition.lng);
+          return Math.sin(dLat / 2) ** 2 + Math.cos(rad(userPosition.lat)) *
+            Math.cos(rad(r.latitude)) * Math.sin(dLng / 2) ** 2;
+        };
+        shown = shown.slice().sort((a, b) => d(a) - d(b));
+      }
+
       $("message").textContent = shown.length
-        ? shown.length + " restaurant" +
-          (shown.length === 1 ? "" : "s") + " found"
+        ? shown.length + " restaurant" + (shown.length === 1 ? "" : "s") + " found"
         : "No restaurants to display yet. Please check back soon.";
 
       shown.forEach(r => {
         const status = currentStatus(r.opening_hours);
 
-        const marker = L.marker([r.latitude, r.longitude])
-          .addTo(map)
-          .bindPopup(
-            "<strong>" + escapeHTML(r.name) + "</strong><br>" +
-            escapeHTML(r.address)
-          );
-
+        const marker = L.marker([r.latitude, r.longitude]).addTo(map).bindPopup(
+          "<strong>" + escapeHTML(r.name) + "</strong><br>" + escapeHTML(r.address));
         markers.push(marker);
 
         const card = document.createElement("article");
@@ -481,9 +299,9 @@ function currentStatus(hours) {
 
         card.innerHTML = `
           <h3>${escapeHTML(r.name)}</h3>
+          ${r.is_published ? "" : '<p><span class="tag draft">Draft · hidden from public</span></p>'}
           <p class="muted">${escapeHTML(r.address)}</p>
-          <p class="${status === "Open now" ? "status" :
-            status === "Closed now" ? "status closed" : "muted"}">
+          <p class="${status === "Open now" ? "status" : status === "Closed now" ? "status closed" : "muted"}">
             ${escapeHTML(status)}
           </p>
           <p class="muted">${escapeHTML(distance(r.latitude, r.longitude))}</p>
@@ -494,8 +312,7 @@ function currentStatus(hours) {
             ? '<a href="tel:' + escapeHTML(r.phone) + '">Call restaurant</a>'
             : "Phone number unavailable"}
             &nbsp; · &nbsp;
-            <a href="${directions(r)}" target="_blank"
-              rel="noopener noreferrer">Directions</a>
+            <a href="${directions(r)}" target="_blank" rel="noopener noreferrer">Directions</a>
           </p>
           <details>
             <summary>Opening hours</summary>
@@ -507,27 +324,15 @@ function currentStatus(hours) {
           </div>
         `;
 
-        card.querySelector(".edit-button").addEventListener("click", () => {
-          editRestaurant(r);
-        });
-
-        card.querySelector(".delete-button").addEventListener("click", () => {
-          deleteRestaurant(r);
-        });
-
+        card.querySelector(".edit-button").addEventListener("click", () => editRestaurant(r));
+        card.querySelector(".delete-button").addEventListener("click", () => deleteRestaurant(r));
         $("list").append(card);
       });
 
       if (markers.length) {
-        const group = L.featureGroup(markers);
-        map.fitBounds(group.getBounds().pad(0.15), { maxZoom: 14 });
+        map.fitBounds(L.featureGroup(markers).getBounds().pad(0.15), { maxZoom: 14 });
       } else {
-        map.setView(
-          userPosition
-            ? [userPosition.lat, userPosition.lng]
-            : [24.4539, 54.3773],
-          11
-        );
+        map.setView(userPosition ? [userPosition.lat, userPosition.lng] : [24.4539, 54.3773], 11);
       }
 
       updateAdminVisibility();
@@ -535,11 +340,9 @@ function currentStatus(hours) {
 
     async function loadRestaurants() {
       const request = ++loadRequest;
-
       $("message").textContent = "Loading restaurants...";
 
-      // The RLS policies return published listings to public users
-      // and all listings to approved administrators.
+      // RLS: public users get published rows, approved admins get all rows.
       const { data, error } = await db
         .from("restaurants")
         .select("*")
@@ -566,7 +369,6 @@ function currentStatus(hours) {
 
     function editRestaurant(r) {
       if (!isAdmin) return;
-
       $("formTitle").textContent = "Edit restaurant";
       $("rid").value = r.id;
       $("name").value = r.name;
@@ -577,27 +379,20 @@ function currentStatus(hours) {
       $("hours").value = JSON.stringify(r.opening_hours || {}, null, 2);
       $("verified").checked = r.verified_location;
       $("published").checked = r.is_published;
-
       $("restaurantForm").classList.remove("hidden");
       $("restaurantForm").scrollIntoView({ behavior: "smooth" });
     }
 
     async function deleteRestaurant(r) {
       if (!isAdmin) return;
-
       if (!confirm("Permanently delete " + r.name + "?")) return;
 
       $("adminMessage").textContent = "Deleting...";
-
-      const { error } = await db
-        .from("restaurants")
-        .delete()
-        .eq("id", r.id);
+      const { error } = await db.from("restaurants").delete().eq("id", r.id);
 
       if (error) {
         console.error(error);
-        $("adminMessage").textContent =
-          "Delete failed. Check administrator permissions.";
+        $("adminMessage").textContent = "Delete failed. Check administrator permissions.";
         return;
       }
 
@@ -621,14 +416,8 @@ function currentStatus(hours) {
         .maybeSingle();
 
       isAdmin = !error && data?.active === true;
-
-      if (!isAdmin) {
-        $("adminMessage").textContent =
-          "This account is not approved to manage restaurants.";
-      } else {
-        $("adminMessage").textContent = "";
-      }
-
+      $("adminMessage").textContent = isAdmin
+        ? "" : "This account is not approved to manage restaurants.";
       updateAdminVisibility();
     }
 
@@ -645,15 +434,9 @@ function currentStatus(hours) {
         alert("Your browser does not support location services.");
         return;
       }
-
       navigator.geolocation.getCurrentPosition(
         position => {
-          userPosition = {
-            lat: position.coords.latitude,
-            lng: position.coords.longitude
-          };
-
-          map.setView([userPosition.lat, userPosition.lng], 13);
+          userPosition = { lat: position.coords.latitude, lng: position.coords.longitude };
           draw();
         },
         () => alert("Allow location access to calculate distances.")
@@ -670,16 +453,11 @@ function currentStatus(hours) {
       }
 
       $("adminMessage").textContent = "Signing in...";
-
-      const { error } = await db.auth.signInWithPassword({
-        email,
-        password
-      });
+      const { error } = await db.auth.signInWithPassword({ email, password });
 
       if (error) {
         console.error(error);
-        $("adminMessage").textContent =
-          "Login failed. Check your credentials.";
+        $("adminMessage").textContent = "Login failed. Check your credentials.";
         return;
       }
 
@@ -689,22 +467,18 @@ function currentStatus(hours) {
 
     $("logout").addEventListener("click", async () => {
       await db.auth.signOut();
-
       isAdmin = false;
       resetForm();
-
       $("adminMessage").textContent = "You have logged out.";
-
       await loadRestaurants();
       updateAdminVisibility();
     });
 
     $("newRestaurant").addEventListener("click", () => {
       if (!isAdmin) return;
-
       resetForm();
-
       $("formTitle").textContent = "Add restaurant";
+      $("published").checked = true;   // new restaurants are public by default
       $("hours").value = JSON.stringify({
         mon: { open: "09:00", close: "22:00" },
         tue: { open: "09:00", close: "22:00" },
@@ -714,7 +488,6 @@ function currentStatus(hours) {
         sat: { open: "09:00", close: "22:00" },
         sun: { open: "09:00", close: "22:00" }
       }, null, 2);
-
       $("restaurantForm").classList.remove("hidden");
       $("restaurantForm").scrollIntoView({ behavior: "smooth" });
     });
@@ -730,18 +503,15 @@ function currentStatus(hours) {
       }
 
       let hours;
-
       try {
         hours = JSON.parse($("hours").value);
       } catch {
-        $("adminMessage").textContent =
-          "Opening hours must be valid JSON.";
+        $("adminMessage").textContent = "Opening hours must be valid JSON.";
         return;
       }
 
       if (!hours || typeof hours !== "object" || Array.isArray(hours)) {
-        $("adminMessage").textContent =
-          "Opening hours must be a JSON object.";
+        $("adminMessage").textContent = "Opening hours must be a JSON object.";
         return;
       }
 
@@ -757,22 +527,16 @@ function currentStatus(hours) {
       };
 
       if (
-        !restaurant.name ||
-        !restaurant.address ||
-        !Number.isFinite(restaurant.latitude) ||
-        !Number.isFinite(restaurant.longitude) ||
-        restaurant.latitude < -90 ||
-        restaurant.latitude > 90 ||
-        restaurant.longitude < -180 ||
-        restaurant.longitude > 180
+        !restaurant.name || !restaurant.address ||
+        !Number.isFinite(restaurant.latitude) || !Number.isFinite(restaurant.longitude) ||
+        restaurant.latitude < -90 || restaurant.latitude > 90 ||
+        restaurant.longitude < -180 || restaurant.longitude > 180
       ) {
-        $("adminMessage").textContent =
-          "Enter a valid restaurant name, address and coordinates.";
+        $("adminMessage").textContent = "Enter a valid restaurant name, address and coordinates.";
         return;
       }
 
       $("adminMessage").textContent = "Saving restaurant...";
-
       const id = $("rid").value;
 
       const result = id
@@ -786,13 +550,12 @@ function currentStatus(hours) {
         return;
       }
 
-      $("adminMessage").textContent = "Restaurant saved successfully.";
+      $("adminMessage").textContent = restaurant.is_published
+        ? "Saved and published." : "Saved as draft (hidden from public).";
       resetForm();
       await loadRestaurants();
     });
 
-    // Refresh the directory when an administrator publishes changes
-    // from another session, or when Supabase auth state changes.
     db.auth.onAuthStateChange(() => {
       setTimeout(async () => {
         await checkAdmin();
@@ -800,10 +563,10 @@ function currentStatus(hours) {
       }, 0);
     });
 
-    // Refresh opening status periodically without reloading the page.
+    window.addEventListener("hashchange", showAdminIfRequested);
     setInterval(draw, 60000);
 
-    
+    showAdminIfRequested();
     checkAdmin();
     loadRestaurants();
   </script>
