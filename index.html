@@ -346,34 +346,48 @@
       return h * 60 + m;
     }
 
-    function currentStatus(hours) {
-      try {
-        const now = abuDhabiTime();
-        const today = hours?.[now.day];
+    
+function currentStatus(hours) {
+  try {
+    const parts = new Intl.DateTimeFormat("en-GB", {
+      timeZone: "Asia/Dubai",
+      weekday: "short",
+      hour: "2-digit",
+      minute: "2-digit",
+      hourCycle: "h23"
+    }).formatToParts(new Date());
 
-        if (!today || !today.open || !today.close) {
-          return "Hours unavailable";
-        }
+    const get = type => parts.find(p => p.type === type)?.value;
+    const day = get("weekday").toLowerCase().slice(0, 3);
+    const time = Number(get("hour")) * 60 + Number(get("minute"));
+    const today = hours?.[day];
 
-        const start = parseTime(today.open);
-        const end = parseTime(today.close);
+    if (!today || !today.open || !today.close)
+      return "Hours unavailable";
 
-        if (!Number.isFinite(start) || !Number.isFinite(end)) {
-          return "Hours unavailable";
-        }
+    const parse = value => {
+      if (!/^\d{2}:\d{2}$/.test(value)) return NaN;
+      const [h, m] = value.split(":").map(Number);
+      return h <= 23 && m <= 59 ? h * 60 + m : NaN;
+    };
 
-        const open = start < end
-          ? now.minute >= start && now.minute < end
-          : start > end
-            ? now.minute >= start || now.minute < end
-            : false;
+    const start = parse(today.open);
+    const end = parse(today.close);
 
-        return open ? "Open now" : "Closed now";
-      } catch {
-        return "Hours unavailable";
-      }
-    }
+    if (!Number.isFinite(start) || !Number.isFinite(end))
+      return "Hours unavailable";
 
+    const open = start < end
+      ? time >= start && time < end
+      : start > end
+        ? time >= start || time < end
+        : false;
+
+    return open ? "Open now" : "Closed now";
+  } catch {
+    return "Hours unavailable";
+  }
+}
     function distance(lat, lng) {
       if (!userPosition) return "Enable location to see distance";
 
